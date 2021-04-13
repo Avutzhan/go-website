@@ -3,30 +3,37 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"html/template"
 )
 
 type User struct {
-	name string
-	age uint16
-	money int16
-	avg_grades, happiness float64
+	Name string
+	Age uint16
+	Money int16
+	Avg_grades, Happiness float64
+	Hobbies []string
 
 }
 
 func (u User) getAllInfo() string {
 	return fmt.Sprintf("Username is %s. He is %d. " +
-		"He has a %d", u.name, u.age, u.money)
+		"He has a %d", u.Name, u.Age, u.Money)
 }
 
 func (u *User) setNewName(newName string) {
-	u.name = newName
+	u.Name = newName
 }
 
 func home_page(w http.ResponseWriter, r *http.Request) {
-	bob := User{"bob", 25, -50, 4.2, 0.8 }
-	bob.setNewName("Alehandro") //function work with copy by default so this is another object
-	// you must to give a pointer of object to change it so you use one object in both operations
-	fmt.Fprintf(w, bob.getAllInfo()) // and this is another object uint16 cant be minus int16 can be minus
+	bob := User{"bob", 25, -50, 4.2, 0.8, []string{"test1", "test2", "test3"} }
+
+	tmpl, err := template.ParseFiles("templates/home_page.html")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	tmpl.Execute(w, bob)
 }
 
 func contacts_page(w http.ResponseWriter, r *http.Request) {
@@ -40,8 +47,6 @@ func handleRequest() {
 }
 
 func main() {
-	//var bob User = ...
-	//bob := User{name: "bob", age: 25, money: -50, avg_grades: 4.2, happiness: 0.8 }
 
 	handleRequest()
 }
