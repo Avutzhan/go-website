@@ -26,7 +26,7 @@ var AbsolutePath = "/home/avutzhan/go-workspace/src/go-website"
 func goDotEnvVariable(key string) string {
 
 	// load .env file
-	err := godotenv.Load(os.ExpandEnv(AbsolutePath + ".env"))
+	err := godotenv.Load(os.ExpandEnv(AbsolutePath + "/.env"))
 
 	if err != nil {
 		panic(err)
