@@ -5,10 +5,12 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 type Article struct {
@@ -18,9 +20,25 @@ type Article struct {
 
 var posts = []Article{}
 var showPost = Article{}
+var env = goDotEnvVariable("ENV")
 var AbsolutePath = "/home/avutzhan/go-workspace/src/go-website/templates"
 
+func goDotEnvVariable(key string) string {
+
+	// load .env file
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	return os.Getenv(key)
+}
+
 func index(w http.ResponseWriter, r *http.Request) {
+	if env == "production" {
+		AbsolutePath = "/var/www/go-website/templates"
+	}
 	t, err := template.ParseFiles(AbsolutePath+"/index.html", AbsolutePath+"/header.html", AbsolutePath+"/footer.html")
 	if err != nil {
 		panic(err)
@@ -52,6 +70,9 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func create(w http.ResponseWriter, r *http.Request) {
+	if env == "production" {
+		AbsolutePath = "/var/www/go-website/templates"
+	}
 	t, err := template.ParseFiles(AbsolutePath+"/create.html", AbsolutePath+"/header.html", AbsolutePath+"/footer.html")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
@@ -87,6 +108,10 @@ func save_article(w http.ResponseWriter, r *http.Request) {
 func show_post(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	w.WriteHeader(http.StatusOK)
+
+	if env == "production" {
+		AbsolutePath = "/var/www/go-website/templates"
+	}
 
 	t, err := template.ParseFiles(AbsolutePath+"/show.html", AbsolutePath+"/header.html", AbsolutePath+"/footer.html")
 	if err != nil {
