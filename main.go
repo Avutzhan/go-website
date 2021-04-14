@@ -21,12 +21,12 @@ type Article struct {
 var posts = []Article{}
 var showPost = Article{}
 var env = goDotEnvVariable("ENV")
-var AbsolutePath = "/home/avutzhan/go-workspace/src/go-website/templates"
+var AbsolutePath = "/home/avutzhan/go-workspace/src/go-website"
 
 func goDotEnvVariable(key string) string {
 
 	// load .env file
-	err := godotenv.Load(".env")
+	err := godotenv.Load(os.ExpandEnv(AbsolutePath + ".env"))
 
 	if err != nil {
 		panic(err)
@@ -37,9 +37,9 @@ func goDotEnvVariable(key string) string {
 
 func index(w http.ResponseWriter, r *http.Request) {
 	if env == "production" {
-		AbsolutePath = "/var/www/go-website/templates"
+		AbsolutePath = "/var/www/go-website"
 	}
-	t, err := template.ParseFiles(AbsolutePath+"/index.html", AbsolutePath+"/header.html", AbsolutePath+"/footer.html")
+	t, err := template.ParseFiles(AbsolutePath+"/templates/index.html", AbsolutePath+"/templates/header.html", AbsolutePath+"/templates/footer.html")
 	if err != nil {
 		panic(err)
 	}
@@ -71,9 +71,9 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 func create(w http.ResponseWriter, r *http.Request) {
 	if env == "production" {
-		AbsolutePath = "/var/www/go-website/templates"
+		AbsolutePath = "/var/www/go-website"
 	}
-	t, err := template.ParseFiles(AbsolutePath+"/create.html", AbsolutePath+"/header.html", AbsolutePath+"/footer.html")
+	t, err := template.ParseFiles(AbsolutePath+"/templates/create.html", AbsolutePath+"/templates/header.html", AbsolutePath+"/templates/footer.html")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
@@ -110,10 +110,10 @@ func show_post(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	if env == "production" {
-		AbsolutePath = "/var/www/go-website/templates"
+		AbsolutePath = "/var/www/go-website"
 	}
 
-	t, err := template.ParseFiles(AbsolutePath+"/show.html", AbsolutePath+"/header.html", AbsolutePath+"/footer.html")
+	t, err := template.ParseFiles(AbsolutePath+"/templates/show.html", AbsolutePath+"/templates/header.html", AbsolutePath+"/templates/footer.html")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
