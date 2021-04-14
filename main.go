@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 
 	"database/sql"
@@ -17,11 +18,12 @@ type Article struct {
 
 var posts = []Article{}
 var showPost = Article{}
+var AbsolutePath = "/home/avutzhan/go-workspace/src/go-website/templates"
 
 func index(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/footer.html")
+	t, err := template.ParseFiles(AbsolutePath+"/index.html", AbsolutePath+"/header.html", AbsolutePath+"/footer.html")
 	if err != nil {
-		fmt.Fprintf(w, err.Error())
+		panic(err)
 	}
 
 	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/golang")
@@ -50,7 +52,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func create(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("templates/create.html", "templates/header.html", "templates/footer.html")
+	t, err := template.ParseFiles(AbsolutePath+"/create.html", AbsolutePath+"/header.html", AbsolutePath+"/footer.html")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
@@ -86,7 +88,7 @@ func show_post(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	w.WriteHeader(http.StatusOK)
 
-	t, err := template.ParseFiles("templates/show.html", "templates/header.html", "templates/footer.html")
+	t, err := template.ParseFiles(AbsolutePath+"/show.html", AbsolutePath+"/header.html", AbsolutePath+"/footer.html")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
@@ -126,7 +128,10 @@ func handleFunc() {
 
 	http.Handle("/", rtr)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
-	http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
 
 func main() {
