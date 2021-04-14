@@ -6,6 +6,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	_ "path/filepath"
+	"runtime"
 
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
@@ -21,12 +24,15 @@ type Article struct {
 var posts = []Article{}
 var showPost = Article{}
 var env = goDotEnvVariable("ENV")
-var AbsolutePath = "/home/avutzhan/go-workspace/src/go-website"
+var (
+	_, b, _, _ = runtime.Caller(0)
+	basepath   = filepath.Dir(b)
+)
 
 func goDotEnvVariable(key string) string {
 
 	// load .env file
-	err := godotenv.Load(os.ExpandEnv(AbsolutePath + "/.env"))
+	err := godotenv.Load(os.ExpandEnv(basepath + "/.env"))
 
 	if err != nil {
 		panic(err)
@@ -36,10 +42,7 @@ func goDotEnvVariable(key string) string {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	if env == "production" {
-		AbsolutePath = "/var/www/go-website"
-	}
-	t, err := template.ParseFiles(AbsolutePath+"/templates/index.html", AbsolutePath+"/templates/header.html", AbsolutePath+"/templates/footer.html")
+	t, err := template.ParseFiles(basepath+"/templates/index.html", basepath+"/templates/header.html", basepath+"/templates/footer.html")
 	if err != nil {
 		panic(err)
 	}
@@ -70,10 +73,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func create(w http.ResponseWriter, r *http.Request) {
-	if env == "production" {
-		AbsolutePath = "/var/www/go-website"
-	}
-	t, err := template.ParseFiles(AbsolutePath+"/templates/create.html", AbsolutePath+"/templates/header.html", AbsolutePath+"/templates/footer.html")
+	t, err := template.ParseFiles(basepath+"/templates/create.html", basepath+"/templates/header.html", basepath+"/templates/footer.html")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
@@ -109,11 +109,7 @@ func show_post(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	w.WriteHeader(http.StatusOK)
 
-	if env == "production" {
-		AbsolutePath = "/var/www/go-website"
-	}
-
-	t, err := template.ParseFiles(AbsolutePath+"/templates/show.html", AbsolutePath+"/templates/header.html", AbsolutePath+"/templates/footer.html")
+	t, err := template.ParseFiles(basepath+"/templates/show.html", basepath+"/templates/header.html", basepath+"/templates/footer.html")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
